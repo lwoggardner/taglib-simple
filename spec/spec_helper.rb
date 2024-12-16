@@ -7,9 +7,11 @@ if ENV['DEBUGCPP'] == 'Y'
 end
 
 require 'minitest/autorun'
+require 'minitest/reporters'
+
 require_relative '../lib/taglib_simple'
 
-puts "TagLib.LIBRARY_VERSION=#{TagLib::LIBRARY_VERSION}"
+Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new unless ENV.include?('RM_INFO')
 
 require 'tempfile'
 

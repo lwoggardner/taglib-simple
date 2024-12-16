@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 3.2'
   s.add_development_dependency 'minitest'
+  s.add_development_dependency 'minitest-reporters'
   s.add_development_dependency 'rake-compiler'
   s.add_development_dependency 'redcarpet'
   s.add_development_dependency 'rubocop'
