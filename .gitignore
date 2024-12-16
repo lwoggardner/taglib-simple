@@ -5,6 +5,8 @@ Gemfile.lock
 Gemfile.local
 _yardoc
 coverage
+# Github actions builds into vendor
+vendor/
 music/
 doc/
 pkg/

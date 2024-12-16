@@ -6,6 +6,7 @@ AllCops:
     - 'spec/**/*.rb'
     - 'tmp/**/*.rb'
     - 'bin/**/*.rb'
+    - 'vendor/' # Github actions bundles into vendor
 
 Metrics/MethodLength:
   Max: 20
