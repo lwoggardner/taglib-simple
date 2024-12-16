@@ -12,6 +12,7 @@ doc/
 pkg/
 tmp/
 .*
+!.github/
 !.yardopts
 !.rubocop.yml
 !.gitignore
