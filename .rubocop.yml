@@ -1,0 +1,14 @@
+AllCops:
+  TargetRubyVersion: 3.2
+  SuggestExtensions: false
+  NewCops: enable
+  Exclude:
+    - 'spec/**/*.rb'
+    - 'tmp/**/*.rb'
+    - 'bin/**/*.rb'
+
+Metrics/MethodLength:
+  Max: 20
+
+Gemspec/DevelopmentDependencies:
+  EnforcedStyle: gemspec
