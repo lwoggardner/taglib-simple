@@ -5,13 +5,10 @@ AllCops:
   TargetRubyVersion: 3.2
   SuggestExtensions: false
   NewCops: enable
-  Exclude:
-    - 'spec/**/*.rb'
-    - 'tmp/**/*.rb'
-    - 'bin/**/*.rb'
-    - 'vendor/**/*' # Github actions bundles into vendor
   Include:
     - 'RakeFile'
+    - 'lib/**/*.rb'
+    - 'tasks/**/*.rb'
 
 Metrics/MethodLength:
   Max: 20

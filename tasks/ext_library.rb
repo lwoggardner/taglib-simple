@@ -83,6 +83,7 @@ class ExtLibrary < Rake::TaskLib
 
   private
 
+  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
   def define
     namespace @name do
       directory install_dir if install_dir
@@ -121,5 +122,5 @@ class ExtLibrary < Rake::TaskLib
       puts "Using #{name} from #{install_dir || 'system install location'}"
     end
   end
-  # @rubocop:enable
+  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 end
