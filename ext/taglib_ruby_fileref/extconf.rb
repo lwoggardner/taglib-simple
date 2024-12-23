@@ -2,19 +2,21 @@
 
 require 'mkmf-rice'
 
-# define TAGLIB_DIR (eg to ~/.local) if you have a locally installed taglib somewhere
-if ENV.key?('TAGLIB_DIR')
-  raise "TAGLIB_DIR does not exist: #{ENV['TAGLIB_DIR']}" unless File.directory?(ENV['TAGLIB_DIR'])
+# --with-taglib-dir - the install dir that a custom build of taglib has been deployed to.
+dir = with_config('taglib-dir')
+if dir && !dir.empty?
+  dir = Pathname.new(dir)
+  dir = dir.expand_path if dir.to_s.start_with?('~') # ~/.local
+  # treat relative paths as relative to the project root
+  dir = Pathname.new(__FILE__).dirname.parent.parent.expand_path / dir if dir.relative?
+  raise "TAGLIB_DIR does not exist: #{dir}" unless dir.directory?
 
-  dir_config('tag', ENV['TAGLIB_DIR'])
+  dir_config('tag', dir.to_path)
 end
 
 have_library('tag') || abort('TagLib is required')
 
-# this to help us debug what kind of file/tag we found - the symbols in the so library are mangled
-# but still useful
-# append_cppflags('-frtti')
-# append_cppflags('-g,-DDEBUG') if enable_config('debug')
+append_cppflags('-g,-DDEBUG') if enable_config('debug')
 
 # Add to existing flags
 append_ldflags('-Wl,--no-undefined')

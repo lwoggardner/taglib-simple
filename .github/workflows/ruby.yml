@@ -1,10 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
-# For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
-
 name: Ruby
 
 on:
@@ -23,6 +16,16 @@ jobs:
     strategy:
       matrix:
         ruby-version: ['3.2', '3.3']
+        taglib-version: ['']  # default version for most runs
+        include:
+          # Run more taglib versions
+          - ruby-version: '3.3'
+            taglib-version: '1.13.1'
+          - ruby-version: '3.3'
+            taglib-version: '2.0.2'
+          - ruby-version: '3.3'
+            taglib-version: 'master'
+
 
     steps:
     - uses: actions/checkout@v4
@@ -35,5 +38,12 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Cache TagLib (C++)
+      id: cache-taglib
+      uses: actions/cache@v2
+      with:
+        path: |
+          tmp/taglib-${{ matrix.taglib-version }}
+        key: taglib-${{ matrix.os }}-v${{ matrix.taglib-version }}-cache.v3
     - name: Run tests
-      run: bundle exec rake
+      run: bundle exec rake -- --with-taglib-dir=tmp/taglib-${{ matrix.taglib-version }}
