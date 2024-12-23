@@ -4,6 +4,7 @@ require 'rake/tasklib'
 
 # Creates tasks for download, build, install a cmake, or autoconf library that is the dependency of a ruby extensions
 class ExtLibrary < Rake::TaskLib
+  include Rake::DSL
   # @!attribute [rw] name
   #   @return [Symbol] the name of the task to creates
 
@@ -61,7 +62,7 @@ class ExtLibrary < Rake::TaskLib
     @version ||= @install_dir.basename.to_s.split('-').last
     nil
   end
-  
+
   def install_dir_from_argv(with_config)
     return nil unless (dir = ARGV.find { |arg| arg.start_with?("--with-#{with_config}") })
 
@@ -79,6 +80,8 @@ class ExtLibrary < Rake::TaskLib
   def download
     sh %(curl -sL "#{format(url, name:, version:)}" | tar xz -C "#{source_dir}")
   end
+
+  private
 
   def define
     namespace @name do
@@ -118,4 +121,5 @@ class ExtLibrary < Rake::TaskLib
       puts "Using #{name} from #{install_dir || 'system install location'}"
     end
   end
+  # @rubocop:enable
 end

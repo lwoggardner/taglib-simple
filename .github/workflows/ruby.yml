@@ -40,10 +40,10 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Cache TagLib (C++)
       id: cache-taglib
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: |
           tmp/taglib-${{ matrix.taglib-version }}
-        key: taglib-${{ matrix.os }}-v${{ matrix.taglib-version }}-cache.v3
+        key: taglib-${{ matrix.os }}-v${{ matrix.taglib-version }}-cache.v4
     - name: Run tests
       run: bundle exec rake -- --with-taglib-dir=tmp/taglib-${{ matrix.taglib-version }}

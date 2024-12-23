@@ -1,3 +1,6 @@
+require:
+  - rubocop-rake
+
 AllCops:
   TargetRubyVersion: 3.2
   SuggestExtensions: false
@@ -7,6 +10,8 @@ AllCops:
     - 'tmp/**/*.rb'
     - 'bin/**/*.rb'
     - 'vendor/**/*' # Github actions bundles into vendor
+  Include:
+    - 'RakeFile'
 
 Metrics/MethodLength:
   Max: 20
