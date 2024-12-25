@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install system dependencies
-      if: !contains(matrix, 'taglib-version')
+      if: ${{ !contains(matrix, 'taglib-version') }}
       run: |
         sudo apt-get update
         sudo apt-get install -y libtag1-dev
@@ -39,7 +39,7 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Cache TagLib (C++)
-      if: contains(matrix, 'taglib-version')
+      if: ${{ contains(matrix, 'taglib-version') }}
       id: cache-taglib
       uses: actions/cache@v4
       with:
@@ -47,9 +47,9 @@ jobs:
           tmp/taglib-${{ matrix.taglib-version }}
         key: taglib-${{ matrix.os }}-v${{ matrix.taglib-version }}-cache.v4
     - name: Run tests with taglib-version
-      if: contains(matrix, 'taglib-version')
+      if: ${{ contains(matrix, 'taglib-version') }}
       run: bundle exec rake -- --with-taglib-dir=tmp/taglib-${{ matrix.taglib-version }}
 
     - name: Run tests using system taglib
-      if: !contains(matrix, 'taglib-version')
+      if: ${{ !contains(matrix, 'taglib-version') }}
       run: bundle exec rake
