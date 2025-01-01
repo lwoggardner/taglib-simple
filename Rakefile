@@ -2,7 +2,6 @@
 
 require 'bundler/gem_tasks'
 Rake::Task['install'].clear
-Rake::Task['release'].clear
 
 require 'rubocop/rake_task'
 RuboCop::RakeTask.new

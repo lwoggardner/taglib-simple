@@ -1,31 +1,36 @@
+# frozen_string_literal: true
+
 require 'minitest/autorun'
 require 'minitest/spec'
 require_relative 'spec_helper'
 
 describe TagLib::MediaFile do
-
   let(:mock_fileref) do
     fr = Minitest::Mock.new
     def fr.state(**input)
       (@state ||= { valid: true, read_only: true }).merge!(input)
     end
-    def fr.valid?; state[:valid]; end
-    def fr.read_only?; state[:read_only]; end
+
+    def fr.valid? = state.[](:valid)
+    def fr.read_only? = state.[](:read_only)
     fr
   end
 
   def expect_close
-    mock_fileref.expect(:close, nil) { mock_fileref.state(valid: false); true }
+    mock_fileref.expect(:close, nil) do
+      mock_fileref.state(valid: false)
+      true
+    end
   end
 
-  let(:retrieve) {{}}
+  let(:retrieve) { {} }
   let(:media_file) { TagLib::MediaFile.new(mock_fileref, **retrieve) }
 
-  let(:audio_properties) {
-    TagLib::AudioProperties.new(audio_length: 1000, bitrate: 320, sample_rate: 44100, channels: 2)
-  }
+  let(:audio_properties) do
+    TagLib::AudioProperties.new(audio_length: 1000, bitrate: 320, sample_rate: 44_100, channels: 2)
+  end
 
-  let(:comment) { 'comment'}
+  let(:comment) { 'comment' }
   let(:year) { 1996 }
   let(:tag) do
     TagLib::AudioTag.new(
@@ -33,21 +38,21 @@ describe TagLib::MediaFile do
     )
   end
 
-  let(:properties) {
+  let(:properties) do
     {
       'TITLE' => %w[Title], 'PERFORMERS' => %w[Me You],
-      'MUSICBRAINZ_ALBUMID' => [ 'MBID1234567890' ]
+      'MUSICBRAINZ_ALBUMID' => ['MBID1234567890']
     }
-  }
+  end
 
-  let(:complex) {
+  let(:complex) do
     {
       'data' => 'data'.b,
       'mimeType' => 'image/jpeg',
-      'deep' => [ 1, "2", { "three" => 3 }],
-      'width' => 0,
+      'deep' => [1, '2', { 'three' => 3 }],
+      'width' => 0
     }
-  }
+  end
 
   def assert_dirty_then_clean
     _(media_file.modified?).must_equal true
@@ -65,7 +70,6 @@ describe TagLib::MediaFile do
   end
 
   describe '#audio_properties interface' do
-
     before do
       mock_fileref.expect(:audio_properties, audio_properties)
       retrieve[:audio_properties] = :average
@@ -74,14 +78,14 @@ describe TagLib::MediaFile do
     it 'delegates readers to the AudioProperties returned from FileRef' do
       _(media_file.audio_length).must_equal 1000
       _(media_file.bitrate).must_equal 320
-      _(media_file.sample_rate).must_equal 44100
+      _(media_file.sample_rate).must_equal 44_100
       _(media_file.channels).must_equal 2
     end
 
     it 'can be read with hash semantics using Symbol keys' do
       _(media_file[:audio_length]).must_equal 1000
       _(media_file[:bitrate]).must_equal 320
-      _(media_file[:sample_rate]).must_equal 44100
+      _(media_file[:sample_rate]).must_equal 44_100
       _(media_file[:channels]).must_equal 2
     end
 
@@ -91,7 +95,7 @@ describe TagLib::MediaFile do
         {
           audio_length: 1000,
           bitrate: 320,
-          sample_rate: 44100,
+          sample_rate: 44_100,
           channels: 2
         }
       )
@@ -99,9 +103,7 @@ describe TagLib::MediaFile do
   end
 
   describe '#tag interface' do
-
-    describe "readers" do
-
+    describe 'readers' do
       before do
         retrieve[:tag] = true
         mock_fileref.expect(:tag, tag)
@@ -183,7 +185,6 @@ describe TagLib::MediaFile do
       end
 
       it 'has writers that store pending changes with Symbol keys' do
-
         new_props = {
           title: 'new title',
           artist: 'new artist',
@@ -206,26 +207,24 @@ describe TagLib::MediaFile do
 
         _(media_file.modifications).must_equal(new_props)
 
-        mock_fileref.expect(:merge_tag_properties, nil, [new_props] )
+        mock_fileref.expect(:merge_tag_properties, nil, [new_props])
         mock_fileref.expect(:save, nil)
         assert_dirty_then_clean { media_file.save! }
       end
 
       it 'raises TypeError for invalid types sent to writers' do
         _ { media_file.title = 123 }.must_raise TypeError
-        _ { media_file.year = "2032" }.must_raise TypeError
+        _ { media_file.year = '2032' }.must_raise TypeError
       end
     end
   end
 
   describe '#properties interface' do
-
     describe 'readers' do
-
       before do
-        mock_fileref.expect(:properties, properties )
+        mock_fileref.expect(:properties, properties)
         # properties - but no complex properties
-        retrieve.merge!({properties: true, complex_property_keys: []})
+        retrieve.merge!({ properties: true, complex_property_keys: [] })
       end
 
       it 'can be read with hash like semantics' do
@@ -261,11 +260,11 @@ describe TagLib::MediaFile do
       it 'can be written with hash like semantics' do
         new_props = {
           'TITLE' => %w[Title], 'PERFORMERS' => %w[Me You],
-          'MUSICBRAINZ_ALBUMID' => [ 'MBID1234567890' ]
+          'MUSICBRAINZ_ALBUMID' => ['MBID1234567890']
         }
         media_file['TITLE'] = 'Title'
         media_file['PERFORMERS'] = %w[Me You]
-        media_file['MUSICBRAINZ_ALBUMID'] = [ 'MBID1234567890' ]
+        media_file['MUSICBRAINZ_ALBUMID'] = ['MBID1234567890']
         _(media_file.modifications).must_equal(new_props)
 
         mock_fileref.expect(:merge_properties, nil, [new_props, false])
@@ -276,11 +275,11 @@ describe TagLib::MediaFile do
       it 'can be written with dynamic methods that do not overlap #tag interface' do
         new_props = {
           'PERFORMERS' => %w[Me You],
-          'MUSICBRAINZ_ALBUMID' => [ 'MBID1234567890' ],
+          'MUSICBRAINZ_ALBUMID' => ['MBID1234567890'],
           'LYRICS' => ['la la la']
         }
 
-        #media_file.title = %w[Title]
+        # media_file.title = %w[Title]
         media_file.performers = 'Me', 'You' # multiple values
         media_file.musicbrainz__album_id = ['MBID1234567890'] # underscores
         media_file.lyrics = 'la la la' # single value
@@ -296,14 +295,13 @@ describe TagLib::MediaFile do
 
       it 'raises TypeError for invalid types sent to writers' do
         _ { media_file['TITLE'] = [123] }.must_raise TypeError, 'Array bad type'
-        _ { media_file['PERFORMERS'] = [ 'OK', 123 ] }.must_raise TypeError, 'Mixed bad types'
+        _ { media_file['PERFORMERS'] = ['OK', 123] }.must_raise TypeError, 'Mixed bad types'
         _ { media_file['MUSICBRAINZ_ALBUMID'] = Object.new }.must_raise TypeError, 'Single value bad type'
       end
     end
   end
 
   describe 'complex properties' do
-
     describe 'readers with complex_property_keys=true' do
       before do
         retrieve[:complex_property_keys] = true
@@ -354,7 +352,7 @@ describe TagLib::MediaFile do
     end
 
     describe 'writers' do
-      let(:new_props) { { 'PICTURE' => [complex]} }
+      let(:new_props) { { 'PICTURE' => [complex] } }
       before do
         mock_fileref.state(read_only: false)
         mock_fileref.expect(:merge_complex_properties, nil, [new_props, false])
@@ -381,36 +379,36 @@ describe TagLib::MediaFile do
 
   describe 'with all types' do
     [
-      [ 'force', { all: true } ],
-      [ 'lazily', { audio_properties: true } ]
-    ]. each do |load_type, init|
-        describe "#{load_type} loaded" do
-          before do
-            retrieve.merge!(init)
-            mock_fileref.expect(:audio_properties, audio_properties)
-            mock_fileref.expect(:tag, tag)
-            mock_fileref.expect(:properties, properties)
-            mock_fileref.expect(:complex_property_keys, ['PICTURE'])
-          end
+      ['force', { all: true }],
+      ['lazily', { audio_properties: true }]
+    ].each do |load_type, init|
+      describe "#{load_type} loaded" do
+        before do
+          retrieve.merge!(init)
+          mock_fileref.expect(:audio_properties, audio_properties)
+          mock_fileref.expect(:tag, tag)
+          mock_fileref.expect(:properties, properties)
+          mock_fileref.expect(:complex_property_keys, ['PICTURE'])
+        end
 
-          describe '#keys' do
-            it 'has all the keys' do
-              mock_fileref.expect(:complex_property, [complex], ['PICTURE']) if init[:all]
-              _(media_file.keys).must_equal(
-                TagLib::AudioProperties.members + TagLib::AudioTag.members + properties.keys + ['PICTURE']
-              )
-            end
-          end
-
-          describe '#to_h via #each' do
-            it 'returns hash with all types' do
-              mock_fileref.expect(:complex_property, [complex], ['PICTURE'])
-              _(media_file.to_h).must_equal(
-                audio_properties.to_h.merge(tag.to_h).merge(properties).merge({ 'PICTURE' => [complex] })
-              )
-            end
+        describe '#keys' do
+          it 'has all the keys' do
+            mock_fileref.expect(:complex_property, [complex], ['PICTURE']) if init[:all]
+            _(media_file.keys).must_equal(
+              TagLib::AudioProperties.members + TagLib::AudioTag.members + properties.keys + ['PICTURE']
+            )
           end
         end
+
+        describe '#to_h via #each' do
+          it 'returns hash with all types' do
+            mock_fileref.expect(:complex_property, [complex], ['PICTURE'])
+            _(media_file.to_h).must_equal(
+              audio_properties.to_h.merge(tag.to_h).merge(properties).merge({ 'PICTURE' => [complex] })
+            )
+          end
+        end
+      end
     end
   end
 
@@ -419,7 +417,7 @@ describe TagLib::MediaFile do
       close_media_file
     end
 
-    describe "#[]" do
+    describe '#[]' do
       it 'returns nil for all types' do
         _(media_file['TITLE']).must_be_nil
         _(media_file['PICTURE']).must_be_nil
@@ -428,7 +426,7 @@ describe TagLib::MediaFile do
       end
     end
 
-    describe "#fetch" do
+    describe '#fetch' do
       it 'raises KeyError for all types' do
         _ { media_file.fetch('TITLE') }.must_raise KeyError
         _ { media_file.fetch('PICTURE') }.must_raise KeyError
@@ -437,7 +435,7 @@ describe TagLib::MediaFile do
       end
     end
 
-    describe "#key?" do
+    describe '#key?' do
       it 'returns false for all types' do
         _(media_file.key?('TITLE')).must_equal false
         _(media_file.key?('PICTURE')).must_equal false
@@ -446,13 +444,13 @@ describe TagLib::MediaFile do
       end
     end
 
-    describe "#keys" do
+    describe '#keys' do
       it 'returns empty array' do
         _(media_file.keys).must_equal([])
       end
     end
 
-    describe "#to_h" do
+    describe '#to_h' do
       it 'returns empty hash via #each' do
         _(media_file.to_h).must_equal({})
       end
@@ -467,7 +465,6 @@ describe TagLib::MediaFile do
   end
 
   describe '#save!' do
-
     it 'raises IOError when file is not writable' do
       mock_fileref.state(read_only: true)
       _ { media_file.save! }.must_raise IOError
@@ -486,7 +483,7 @@ describe TagLib::MediaFile do
       mock_fileref.expect(:merge_complex_properties, nil) do |_hash, replace_all|
         order = :complex if replace_all == obj && order == :props
       end
-      mock_fileref.expect(:merge_tag_properties, nil) { order = :tag if order == :complex  }
+      mock_fileref.expect(:merge_tag_properties, nil) { order = :tag if order == :complex }
       mock_fileref.expect(:save, nil) { order == :tag }
       assert_dirty_then_clean { media_file.save!(replace_all: obj) }
     end
@@ -523,8 +520,7 @@ describe TagLib::MediaFile do
     end
   end
 
-  describe "open class method" do
-
+  describe 'open class method' do
     describe 'without a block' do
       it 'returns a MediaFile' do
         mf = TagLib::MediaFile.open(mock_fileref)
@@ -542,7 +538,7 @@ describe TagLib::MediaFile do
     describe 'with a block' do
       it 'yields a MediaFile and returns result of the block' do
         expect_close
-        result = TagLib::MediaFile.open(mock_fileref) do |mf|
+        result = TagLib::MediaFile.open(mock_fileref) do |_mf|
           'result'
         end
         _(result).must_equal 'result'
@@ -550,7 +546,7 @@ describe TagLib::MediaFile do
 
       it 'saves automatically and returns the result of the block' do
         mock_fileref.state(read_only: false)
-        mock_fileref.expect(:merge_tag_properties, nil, [{title: 'new title'}])
+        mock_fileref.expect(:merge_tag_properties, nil, [{ title: 'new title' }])
         mock_fileref.expect(:save, nil)
         expect_close
         result = TagLib::MediaFile.open(mock_fileref) do |mf|
@@ -602,7 +598,7 @@ describe TagLib::MediaFile do
   end
 
   describe "with a real TagLib::Ruby::FileRef (#{TagLib::LIBRARY_VERSION})" do
-    let(:fixture_mp3) { fixture_path('itunes10.mp3')}
+    let(:fixture_mp3) { fixture_path('itunes10.mp3') }
     it 'reads the file' do
       mf = TagLib::MediaFile.read(fixture_mp3, all: true)
       _(mf).must_be_instance_of TagLib::MediaFile
@@ -619,7 +615,7 @@ describe TagLib::MediaFile do
     end
     it 'reads and writes with File IO' do
       with_filecopy(fixture_mp3) do |io|
-        TagLib::MediaFile.open(io, audio_properties: :fast)  do |mf|
+        TagLib::MediaFile.open(io, audio_properties: :fast) do |mf|
           _(mf.bitrate).must_equal 288
           mf.title = 'new title'
           mf.sub_title = 'sub title'
@@ -638,7 +634,6 @@ describe TagLib::MediaFile do
         end
       end
     end
-
 
     it 'can delete all the tags' do
       with_filecopy(fixture_mp3) do |io|
