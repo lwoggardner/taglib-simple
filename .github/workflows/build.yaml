@@ -5,7 +5,11 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
+  workflow_call: # from release
+    inputs:
+      ref:
+        type: 'string'
+        default: ${{github.ref}}
 permissions:
   contents: read
 
@@ -13,6 +17,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      TERM: color # Pretty spec output
+      GIT_REF: ${{ inputs.ref || github.ref }}
+      GIT_BASE_REF: ${{ github.base_ref || 'undefined' }}
+
     strategy:
       matrix:
         include:
@@ -29,6 +38,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        ref: ${{ env.GIT_REF }}
     - name: Install system dependencies
       if: ${{ !matrix.taglib-version }}
       run: |
