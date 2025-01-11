@@ -99,6 +99,12 @@ def parse_options
         end
     end
 
+    opts.on('-v', '--version', 'Show version information') do
+      puts "taglib-simple gem: #{TagLib::Simple::VERSION}"
+      puts "taglib library   : #{TagLib::LIBRARY_VERSION}"
+      exit
+    end
+
     opts.on('-h', '--help', 'Show this help message') do
       puts opts
       exit
