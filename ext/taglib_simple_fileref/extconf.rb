@@ -20,4 +20,4 @@ append_cppflags('-g,-DDEBUG') if enable_config('debug')
 
 # Add to existing flags
 append_ldflags('-Wl,--no-undefined')
-create_makefile('taglib_ruby_fileref')
+create_makefile('taglib_simple_fileref')

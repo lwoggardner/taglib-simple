@@ -1,4 +1,8 @@
---markup=markdown
+--markup "markdown"
+--plugin "yard_rice"
+ext/**/*.hpp
+lib/**/*.rb
 -
 README.md
 INTERNALS.md
+

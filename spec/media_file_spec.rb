@@ -597,7 +597,7 @@ describe TagLib::MediaFile do
     end
   end
 
-  describe "with a real TagLib::Ruby::FileRef (#{TagLib::LIBRARY_VERSION})" do
+  describe "with a real TagLib::Simple::FileRef (#{TagLib::LIBRARY_VERSION})" do
     let(:fixture_mp3) { fixture_path('itunes10.mp3') }
     it 'reads the file' do
       mf = TagLib::MediaFile.read(fixture_mp3, all: true)

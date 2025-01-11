@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'bundler/gem_tasks'
-Rake::Task['install'].clear
+require_relative 'gem_helper'
+require_relative 'lib/taglib_simple/version'
+GemHelper.install_tasks(version: TagLib::Simple::VERSION)
 
 require 'rubocop/rake_task'
 RuboCop::RakeTask.new
@@ -22,15 +23,14 @@ end
 require 'rake/extensiontask'
 task compile: [:taglib]
 
-Rake::ExtensionTask.new('taglib_ruby_fileref') do |ext|
-  ext.ext_dir = 'ext/taglib_ruby_fileref'
+Rake::ExtensionTask.new('taglib_simple_fileref') do |ext|
+  ext.ext_dir = 'ext/taglib_simple_fileref'
 end
 
 require 'yard'
-require_relative 'lib/yard/rice'
+CLOBBER << 'doc'
 YARD::Rake::YardocTask.new do |t|
   t.options << '--fail-on-warning'
-  t.files = %w[lib/**/*.rb ext/**/*.hpp]
 end
 
 require 'rake/testtask'
@@ -41,5 +41,3 @@ end
 
 # Define default task to run compile, spec, and rubocop
 task default: %i[rubocop compile spec yard]
-
-puts ARGV

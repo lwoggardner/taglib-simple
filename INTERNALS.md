@@ -4,10 +4,10 @@ Uses the [Rice] header only library to create a Ruby c++ extension
 
 ### Classes
 
-#### C++ class {TagLib::Ruby::FileRef}
+#### C++ class {TagLib::Simple::FileRef}
 - Ruby extension class wrapping [Taglib::FileRef]
 - The initial filename (or IO object) is the only Ruby object held in a C++ reference
-- When a {TagLib::Ruby::FileRef} is closed, the native [TagLib::FileRef] is released, which releases memory and file handles.
+- When a {TagLib::Simple::FileRef} is closed, the native [TagLib::FileRef] is released, which releases memory and file handles.
 - Simple Ruby objects are used for all output.
     - Memory content is copied, not shared
     - No native TagLib objects are exposed to Ruby
@@ -16,13 +16,13 @@ Uses the [Rice] header only library to create a Ruby c++ extension
 - Mutating interfaces all take Hash input to avoid exposing the complexity of the underlying TagLib structures.
 - Can be used directly if preferred over {TagLib::MediaFile}.
 
-#### C++ class TagLib::Ruby::IOStream (private)
+#### C++ class TagLib::Simple::IOStream (private)
 - Implements the abstract [TagLib::IOStream] interface over anything
-  that quacks like a ruby IO and that is provided to {TagLib::Ruby::FileRef} constructor instead of a plain string
+  that quacks like a ruby IO and that is provided to {TagLib::Simple::FileRef} constructor instead of a plain string
   file name.
 
 #### Ruby class {TagLib::MediaFile}
-- Wraps {TagLib::Ruby::FileRef} with a more idiomatic Ruby interface.
+- Wraps {TagLib::Simple::FileRef} with a more idiomatic Ruby interface.
 - Quacks like a Hash where:
     - Symbol keys represent entries from Tag and AudioProperties
     - String keys represent keys into [TagLib::PropertyMap] or complex properties, e.g., 'TITLE', 'ARTIST'.

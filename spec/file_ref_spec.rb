@@ -4,7 +4,7 @@ require_relative 'spec_helper'
 
 
 # Here we are testing the wrapped FileRef
-describe TagLib::Ruby::FileRef do
+describe TagLib::Simple::FileRef do
 
   def assert_invalid(ref)
     _(ref.valid?).must_equal false
@@ -56,43 +56,43 @@ describe TagLib::Ruby::FileRef do
 
     it "accepts a filename" do
       _(File.exist?(fixture_m4a)).must_equal true
-      ref = TagLib::Ruby::FileRef.new(fixture_m4a, :average)
+      ref = TagLib::Simple::FileRef.new(fixture_m4a, :average)
       assert_valid(ref)
     end
 
     it "accepts an IO object" do
       File.open fixture_m4a, 'rb' do |io|
-        ref = TagLib::Ruby::FileRef.new(io, :average)
+        ref = TagLib::Simple::FileRef.new(io, :average)
         assert_valid(ref)
       end
     end
 
     [nil, false].each do |style|
       it "accepts #{style.inspect} for audio_read_style" do
-        ref = TagLib::Ruby::FileRef.new(fixture_m4a, nil)
+        ref = TagLib::Simple::FileRef.new(fixture_m4a, nil)
         _(ref.valid?).must_equal true
         _(ref.audio_properties).must_be_nil
       end
     end
 
     it 'raises TypeErrors on bad inputs' do
-      _(-> { TagLib::Ruby::FileRef.new(1, :average) }).must_raise TypeError
-      _(-> { TagLib::Ruby::FileRef.new(fixture_m4a, 1) }).must_raise TypeError
+      _(-> { TagLib::Simple::FileRef.new(1, :average) }).must_raise TypeError
+      _(-> { TagLib::Simple::FileRef.new(fixture_m4a, 1) }).must_raise TypeError
     end
 
     it "handles non existent files" do
-      fr = TagLib::Ruby::FileRef.new('/does/not/exist', :average)
+      fr = TagLib::Simple::FileRef.new('/does/not/exist', :average)
       assert_invalid(fr)
     end
 
     it 'accepts Pathname' do
-      fr = TagLib::Ruby::FileRef.new(Pathname(fixture_m4a), :average)
+      fr = TagLib::Simple::FileRef.new(Pathname(fixture_m4a), :average)
       assert_valid(fr)
     end
 
     it 'handles invalid stream' do
       File.open(fixture_path('empty.file')) do |io|
-        fr = TagLib::Ruby::FileRef.new(io, :average)
+        fr = TagLib::Simple::FileRef.new(io, :average)
         assert_invalid(fr)
       end
     end
@@ -100,7 +100,7 @@ describe TagLib::Ruby::FileRef do
 
   describe "#audio_properties" do
     it "returns expected values" do
-      ref = TagLib::Ruby::FileRef.new(fixture_m4a, :average)
+      ref = TagLib::Simple::FileRef.new(fixture_m4a, :average)
       ap = ref.audio_properties
       _(ap).wont_be_nil
       _(ap.audio_length).must_equal 3708
@@ -110,7 +110,7 @@ describe TagLib::Ruby::FileRef do
     end
 
     it "raises error when accessing properties after close" do
-      ref = TagLib::Ruby::FileRef.new(fixture_m4a, :average)
+      ref = TagLib::Simple::FileRef.new(fixture_m4a, :average)
       ref.close
       _(-> { ref.audio_properties }).must_raise TagLib::Error
     end
@@ -118,7 +118,7 @@ describe TagLib::Ruby::FileRef do
 
   describe "#tag" do
     it "returns expected values" do
-      ref = TagLib::Ruby::FileRef.new(fixture_mp3, nil)
+      ref = TagLib::Simple::FileRef.new(fixture_mp3, nil)
       tag = ref.tag
       _(tag).wont_be_nil
       _(tag.title).must_equal 'iTunes10MP3'
@@ -146,14 +146,14 @@ describe TagLib::Ruby::FileRef do
       }
 
       with_filecopy(empty_ogg) do |tf|
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
 
         ref.merge_tag_properties(properties)
         _(ref.tag&.to_h).must_equal(properties)
         ref.save
         ref.close
         tf.rewind
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
         _(ref.tag.to_h).must_equal(properties)
       end
     end
@@ -176,7 +176,7 @@ describe TagLib::Ruby::FileRef do
 
   describe "#properties" do
     it "returns expected values" do
-      ref = TagLib::Ruby::FileRef.new(fixture_mp3, :average)
+      ref = TagLib::Simple::FileRef.new(fixture_mp3, :average)
       props = ref.properties
       assert_properties(props)
       _(props).must_equal(mp3_properties)
@@ -197,7 +197,7 @@ describe TagLib::Ruby::FileRef do
       }
 
       with_filecopy(empty_ogg) do |tf|
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
 
         _(ref.properties.size).must_equal(0)
         set_properties = properties.dup
@@ -207,7 +207,7 @@ describe TagLib::Ruby::FileRef do
         ref.save
         ref.close
         tf.rewind
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
         _(ref.properties).must_equal(properties)
       end
     end
@@ -219,7 +219,7 @@ describe TagLib::Ruby::FileRef do
       }
 
       with_filecopy(fixture_path('itunes10.mp3')) do |tf|
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
         _(ref.properties.size).must_be :>=, 5
 
         ref.merge_properties(properties, true) #replace_all
@@ -227,7 +227,7 @@ describe TagLib::Ruby::FileRef do
         ref.save
         ref.close
         tf.rewind
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
         _(ref.properties).must_equal(properties)
       end
     end
@@ -237,7 +237,7 @@ describe TagLib::Ruby::FileRef do
 
     it "returns expected values" do
       since_taglib2
-      ref = TagLib::Ruby::FileRef.new(fixture_path('itunes10.mp3'), nil)
+      ref = TagLib::Simple::FileRef.new(fixture_path('itunes10.mp3'), nil)
       _(ref.complex_property_keys).must_equal ['PICTURE']
       picture = ref.complex_property('PICTURE')
       _(picture).must_be_instance_of Array
@@ -255,12 +255,12 @@ describe TagLib::Ruby::FileRef do
   describe "#merge_complex_properties" do
     it "persists complex properties" do
       since_taglib2
-      picture  = TagLib::Ruby::FileRef.new(fixture_path('itunes10.mp3'), nil)
+      picture  = TagLib::Simple::FileRef.new(fixture_path('itunes10.mp3'), nil)
                                       .complex_property('PICTURE')
 
       with_filecopy(empty_ogg) do |tf|
 
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
 
         _(ref.complex_property_keys).must_equal []
         ref.merge_complex_properties({'PICTURE'=> picture})
@@ -268,7 +268,7 @@ describe TagLib::Ruby::FileRef do
         ref.save
         ref.close
         tf.rewind
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
         _(ref.complex_property_keys).must_equal ['PICTURE']
         ogg_picture = ref.complex_property('PICTURE')
         _(ogg_picture).must_be_instance_of Array
@@ -282,7 +282,7 @@ describe TagLib::Ruby::FileRef do
 
       with_filecopy(fixture_path('itunes10.mp3')) do |tf|
 
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
         _(ref.complex_property_keys).must_equal ['PICTURE']
 
         ref.merge_complex_properties({}, true) #replace_all
@@ -291,7 +291,7 @@ describe TagLib::Ruby::FileRef do
         ref.save
         ref.close
         tf.rewind
-        ref = TagLib::Ruby::FileRef.new(tf, nil)
+        ref = TagLib::Simple::FileRef.new(tf, nil)
         _(ref.complex_property_keys).must_equal []
         ogg_picture = ref.complex_property('PICTURE')
         _(ogg_picture).must_equal []
@@ -301,7 +301,7 @@ describe TagLib::Ruby::FileRef do
 
   describe "#close" do
     it "raises error when accessing properties after close" do
-      ref = TagLib::Ruby::FileRef.new(fixture_m4a, :average)
+      ref = TagLib::Simple::FileRef.new(fixture_m4a, :average)
       _(ref.valid?).must_equal true
       ref.close
       assert_invalid(ref)
@@ -309,7 +309,7 @@ describe TagLib::Ruby::FileRef do
 
     it "does not close the io" do
       File.open(fixture_m4a, 'rb') do |io|
-        ref = TagLib::Ruby::FileRef.new(io, :average)
+        ref = TagLib::Simple::FileRef.new(io, :average)
         ref.close
         _(io.closed?).must_equal false
       end
