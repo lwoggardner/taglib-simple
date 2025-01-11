@@ -127,7 +127,7 @@ def parse_options
   options
 end
 
-if __FILE__ == $PROGRAM_NAME
+if File.basename(__FILE__) == File.basename($PROGRAM_NAME)
   options = parse_options
   if File.directory?(options[:source])
     process_directory(options[:source], patterns: options[:patterns], retrieve: options[:retrieve], &options[:output])

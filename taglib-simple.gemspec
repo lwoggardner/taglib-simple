@@ -35,8 +35,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'base64'
   s.add_dependency 'rice'
 
-  s.executables = Dir['bin/*.rb']
+  s.executables = Dir['bin/*.rb'].map { |f| File.basename(f) }
   s.extensions = Dir['ext/**/extconf.rb']
-  s.files = Dir['bin/**/*.rb', 'lib/**/*.rb', 'ext/taglib_*/*.{cpp,hpp,h}', '*.md', 'LICENSE.txt', '.yardopts']
+  s.files = Dir['bin/*.rb', 'lib/**/*.rb', 'ext/taglib_*/*.{cpp,hpp,h}', '*.md', 'LICENSE.txt', '.yardopts']
 
 end
