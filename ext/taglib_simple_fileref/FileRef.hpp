@@ -19,8 +19,8 @@ using namespace Rice;
 
 // @!yard module TagLib
 namespace TagLib {
- // @!yard module Ruby
- namespace Ruby {
+ // @!yard module Simple
+ namespace Simple {
   /** @!yard
    * # C++ extension wrapping underlying TagLib::FileRef so we can interact with it using Ruby objects
    * class FileRef
@@ -157,8 +157,8 @@ namespace TagLib {
   //@!yard end # FileRef
  }
 
- //@!yard end # Ruby
+ //@!yard end # Simple
 }
 
 //@!yard end # TagLib
-void define_taglib_ruby_fileref(const Module &rb_mTagLibRuby);
+void define_taglib_simple_fileref(const Module &rb_mTagLibRuby);

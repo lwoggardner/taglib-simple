@@ -15,7 +15,7 @@
 using namespace Rice;
 
 namespace TagLib {
-   namespace Ruby {
+   namespace Simple {
       // taglib to ruby
       Rice::Object tagLibStringToNonEmptyRubyUTF8String(TagLib::String string);
       Rice::Object uintToNonZeroRubyInteger(unsigned integer);

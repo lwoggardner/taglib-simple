@@ -3,7 +3,7 @@
 using namespace Rice;
 
 namespace TagLib {
-  namespace Ruby {
+  namespace Simple {
 
     TagLib::AudioProperties::ReadStyle rubyObjectToTagLibAudioPropertiesReadStyle(const Object& readStyle) {
       if (!readStyle.test()) {

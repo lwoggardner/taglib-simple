@@ -4,7 +4,7 @@
 using namespace Rice;
 
 namespace TagLib {
-    namespace Ruby {
+    namespace Simple {
 
     Object tagLibStringToNonEmptyRubyUTF8String(TagLib::String string) {
         if (string.length() == 0) {

@@ -4,7 +4,7 @@ require_relative 'error'
 require_relative 'audio_properties'
 require_relative 'audio_tag'
 require_relative 'types'
-require_relative '../taglib_ruby_fileref'
+require_relative '../taglib_simple_fileref'
 require 'forwardable'
 
 module TagLib
@@ -100,7 +100,7 @@ module TagLib
     #   See {#retrieve}.
     # @raise [Error] if TagLib cannot open or process the file
     def initialize(file, all: false, audio_properties: all && :average, **retrieve)
-      @fr = file.respond_to?(:valid?) ? file : Ruby::FileRef.new(file, audio_properties)
+      @fr = file.respond_to?(:valid?) ? file : Simple::FileRef.new(file, audio_properties)
       raise Error, "TagLib could not open #{file}" unless @fr.valid?
 
       @audio_properties = (audio_properties && @fr.audio_properties) || nil
@@ -272,14 +272,12 @@ module TagLib
     # Get a property
     # @param [String, Symbol] key
     # @param [Boolean] all if set property keys will return a list, otherwise just the first value
-    # @param [Boolean] saved if set, any pending {#modifications} will be ignored when resolving the value for *key*
+    # @param [Boolean] saved if set only saved values will be used, ie {#modifications} will be ignored
     # @return [Integer] where *key* is an {AudioProperties} member
     # @return [String, Integer] where *key* is an {AudioTag} member
     # @return [String, Array<String>] for a simple property
     # @return [Hash, Array<Hash>] for a complex property
     # @return [nil] if the *key* is not found
-    # @see fetch
-    # @see fetch_all
     # @!macro lazy
     def [](key, all: false, saved: false)
       public_send(all ? :fetch_all : :fetch, key, nil, saved:)
@@ -288,7 +286,7 @@ module TagLib
     # Fetch the first available value for a property from the media file
     # @param [String, Symbol] key
     # @param [Object] default optional value to return when *key* is not found and no block given
-    # @param [Boolean] saved if set, any pending {#modifications} will be ignored when resolving the value for *key*
+    # @param [Boolean] saved if set only saved values will be used, ie {#modifications} will be ignored
     # @yield [key] optional block to execute when *key* is not found
     # @return [Integer] where *key* is an {AudioProperties} member
     # @return [String, Integer] where *key* is an {AudioTag} member
@@ -308,7 +306,7 @@ module TagLib
     # Fetch a potentially multi-value property from the media file
     # @param [String, Symbol] key
     # @param [Object] default optional value to return when *key* is not found and no block given
-    # @param [Boolean] saved if set, any pending {#modifications} will be ignored when resolving the value for *key*
+    # @param [Boolean] saved if set only saved values will be used, ie {#modifications} will be ignored
     # @yield [key] optional block to execute when *key* is not found
     # @return [Integer] where *key* is an {AudioProperties} member
     # @return [String, Integer] where *key* is an {AudioTag} member
@@ -376,12 +374,15 @@ module TagLib
       ].compact.flatten.uniq
     end
 
+    # rubocop:disable Metrics/AbcSize
+
     # @param [String|Symbol] key
     #   simple or complex property (String), or a member attribute of {AudioTag} or {AudioProperties} (Symbol)
+    # @param [Boolean] saved if set only saved keys are checked, ie {#modifications} are ignored
     # @return [Boolean]
     # @!macro lazy
-    def include?(key, lazy: !closed?)
-      return true if @mutated.keys.include?(key)
+    def include?(key, saved: false, lazy: !closed?)
+      return true if !saved && @mutated.keys.include?(key)
 
       case key
       when String
@@ -394,6 +395,7 @@ module TagLib
         false
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     alias key? include?
     alias member? include?

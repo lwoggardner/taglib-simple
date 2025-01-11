@@ -12,7 +12,7 @@
 using namespace Rice;
 
 namespace TagLib {
-    namespace Ruby {
+    namespace Simple {
         FileRef::FileRef(const Object fileOrStream, const Object readAudioProperties) : fileRef(nullptr), stream(nullptr) {
             TagLib::AudioProperties::ReadStyle style = rubyObjectToTagLibAudioPropertiesReadStyle(readAudioProperties);
 
@@ -163,7 +163,7 @@ namespace TagLib {
         }
 
        Rice::String FileRef::toString() const {
-            std::string result = "TagLib::Ruby::FileRef [";
+            std::string result = "TagLib::Simple::FileRef [";
 
             if (this->isValid()) {
                 result += "io=" + std::string(fileRef->file()->name());
@@ -176,7 +176,7 @@ namespace TagLib {
         }
 
         Rice::String FileRef::inspect() const {
-            std::string result = "TagLib::Ruby::FileRef [";
+            std::string result = "TagLib::Simple::FileRef [";
 
             if (this->isValid()) {
                 result += "io='" + std::string(fileRef->file()->name()) + "'";
@@ -247,24 +247,24 @@ namespace TagLib {
     }
 }
 
-void define_taglib_ruby_fileref(const Module& rb_mParent) {
+void define_taglib_simple_fileref(const Module& rb_mParent) {
 
-    Data_Type<TagLib::Ruby::FileRef> rb_cFileRef = define_class_under<TagLib::Ruby::FileRef>( { rb_mParent }, "FileRef")
-            .define_constructor(Constructor<TagLib::Ruby::FileRef, TagLib::FileRef, Object, Object>(), Arg("file").keepAlive(), Arg("style") = Qnil)
-            .define_method("valid?", &TagLib::Ruby::FileRef::isValid)
-            .define_method("read_only?", &TagLib::Ruby::FileRef::isReadOnly)
-            .define_method("close", &TagLib::Ruby::FileRef::close)
-            .define_method("audio_properties", &TagLib::Ruby::FileRef::audioProperties)
-            .define_method("properties", &TagLib::Ruby::FileRef::properties)
-            .define_method("tag", &TagLib::Ruby::FileRef::tag)
-            .define_method("merge_properties", &TagLib::Ruby::FileRef::mergeProperties,Arg("h"),Arg("r") = false)
-            .define_method("merge_tag_properties", &TagLib::Ruby::FileRef::mergeTagProperties, Arg("h"))
-            .define_method("save", &TagLib::Ruby::FileRef::save)
-            .define_method("to_s", &TagLib::Ruby::FileRef::toString)
-            .define_method("inspect", &TagLib::Ruby::FileRef::inspect)
-            .define_method("complex_property", &TagLib::Ruby::FileRef::complexProperty, Arg("key"))
-            .define_method("complex_property_keys", &TagLib::Ruby::FileRef::complexPropertyKeys)
-            .define_method("merge_complex_properties", &TagLib::Ruby::FileRef::mergeComplexProperties, Arg("h"), Arg("r") = false)
+    Data_Type<TagLib::Simple::FileRef> rb_cFileRef = define_class_under<TagLib::Simple::FileRef>( { rb_mParent }, "FileRef")
+            .define_constructor(Constructor<TagLib::Simple::FileRef, TagLib::FileRef, Object, Object>(), Arg("file").keepAlive(), Arg("style") = Qnil)
+            .define_method("valid?", &TagLib::Simple::FileRef::isValid)
+            .define_method("read_only?", &TagLib::Simple::FileRef::isReadOnly)
+            .define_method("close", &TagLib::Simple::FileRef::close)
+            .define_method("audio_properties", &TagLib::Simple::FileRef::audioProperties)
+            .define_method("properties", &TagLib::Simple::FileRef::properties)
+            .define_method("tag", &TagLib::Simple::FileRef::tag)
+            .define_method("merge_properties", &TagLib::Simple::FileRef::mergeProperties,Arg("h"),Arg("r") = false)
+            .define_method("merge_tag_properties", &TagLib::Simple::FileRef::mergeTagProperties, Arg("h"))
+            .define_method("save", &TagLib::Simple::FileRef::save)
+            .define_method("to_s", &TagLib::Simple::FileRef::toString)
+            .define_method("inspect", &TagLib::Simple::FileRef::inspect)
+            .define_method("complex_property", &TagLib::Simple::FileRef::complexProperty, Arg("key"))
+            .define_method("complex_property_keys", &TagLib::Simple::FileRef::complexPropertyKeys)
+            .define_method("merge_complex_properties", &TagLib::Simple::FileRef::mergeComplexProperties, Arg("h"), Arg("r") = false)
     ;
 
 }

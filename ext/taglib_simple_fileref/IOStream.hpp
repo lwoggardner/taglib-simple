@@ -7,7 +7,7 @@
 using namespace Rice;
 
 namespace TagLib {
-    namespace Ruby {
+    namespace Simple {
 
 #if (TAGLIB_MAJOR_VERSION >= 2)
         // V2 looks to have aligned with posix

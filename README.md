@@ -7,7 +7,7 @@
 ```gem install taglib-simple``` 
 
 or include in your Gemfile
-```gem 'taglib-simple```
+```gem 'taglib-simple'```
 
 ## Usage - taglib.rb
 

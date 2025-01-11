@@ -8,7 +8,7 @@
 
 using namespace Rice;
 namespace TagLib {
-namespace Ruby {
+namespace Simple {
 
     IOStream::IOStream(Object ruby_io) : io(std::move(ruby_io)) {
         // Only things like File that have a writable? method are considered writable

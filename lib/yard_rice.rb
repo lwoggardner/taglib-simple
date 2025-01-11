@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# lib/yard-rice.rb
 require 'yard'
 
 # @!visibility private
